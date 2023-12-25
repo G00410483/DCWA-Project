@@ -1,0 +1,44 @@
+<!-- stores.ejs -->
+
+<!-- styling.ejs -->
+<style>
+    table {
+      width: 80%; /* Adjust the width as needed */
+      margin: auto; /* Center-align the table */
+      border-collapse: collapse;
+    }
+  
+    th, td {
+      padding: 10px; /* Add padding to create a gap between columns */
+      text-align: center; /* Center-align content within cells */
+      border: 1px solid #ddd; /* Add border for better visibility */
+    }
+  </style>
+  
+  <!-- Create a table to display store information -->
+  <table>
+    <tr>
+      <th>PRODUCT ID</th>
+      <th>DESCRIPTION</th>
+      <th>STORE ID</th>
+      <th>LOCATION</th>
+      <th>PRICE</th>
+      <th></th>
+    </tr>
+    <!-- Loop through each store in the 'stores' array -->
+    <% products.forEach((currentElement) => { %>
+      <tr>
+        <!-- Display product details in each row -->
+        <td><%= currentElement['Product ID'] %></td>
+        <td><%= currentElement['Description'] %></td>
+        <td><%= currentElement['Store ID'] %></td>
+        <td><%= currentElement['Location'] %></td>
+        <td><%= currentElement['Price'] %></td>
+        <!-- Create a link to the 'Update' page for each store -->
+        <td><a href='/stores/edit/<%= currentElement.sid %>'>Delete <%= currentElement['Description'] %></a></td>
+      </tr>
+    <% }) %>
+  </table>
+  <!-- Add a link to the home page -->
+  <a href='/'>Home</a>
+  

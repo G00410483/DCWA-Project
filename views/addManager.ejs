@@ -1,0 +1,54 @@
+<!-- Add Manager Page -->
+
+<!-- styling -->
+<style>
+    table {
+      width: 80%;
+      /* Adjust the width as needed */
+      margin: auto;
+      /* Center-align the table */
+      border-collapse: collapse;
+    }
+  
+    th,
+    td {
+      padding: 10px;
+      /* Add padding to create a gap between columns */
+      text-align: center;
+      /* Center-align content within cells */
+      border: 1px solid #ddd;
+      /* Add border for better visibility */
+    }
+    button {
+      display: block;
+      margin: auto;
+      margin-top: 10px; /* Optional: Add some top margin for spacing */
+    }
+  </style>
+  <h1>Add Manager</h1>
+  <!-- Form to add a manager -->
+<form action="/managers/add" method="POST"> <!-- Corrected form action -->
+    <table>
+      <tr>
+        <td>
+          <label for="managerID">MANAGER ID:</label> <!-- Corrected field name -->
+          <input type="text" id="managerID" name="managerID" required>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" pattern=".{5,}" title="Minimum 5 characters required" required>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="salary">Salary:</label>
+          <input type="text" id="salary" name="salary" pattern=".{4,}" title="Minimum 4 characters required" required>
+        </td>
+      </tr>
+    </table>
+    <!-- Button to add the manager -->
+    <button type="submit">Add Manager</button>
+  </form>
+  

@@ -1,0 +1,51 @@
+<!-- stores.ejs -->
+
+<!-- styling.ejs -->
+<style>
+  table {
+    width: 80%;
+    /* Adjust the width as needed */
+    margin: auto;
+    /* Center-align the table */
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    /* Add padding to create a gap between columns */
+    text-align: center;
+    /* Center-align content within cells */
+    border: 1px solid #ddd;
+    /* Add border for better visibility */
+  }
+</style>
+
+<!-- Add a link to the home page -->
+<a href='/managers/add'>Add</a>
+<!-- Create a table to display store information -->
+<table>
+  <tr>
+    <th>MANAGER ID</th>
+    <th>NAME</th>
+    <th>SALARY</th>
+  </tr>
+  <!-- Loop through each store in the 'managers' array -->
+  <% managers.forEach((currentElement)=> { %>
+    <tr>
+      <!-- Display store details in each row -->
+      <td>
+        <%= currentElement._id %>
+      </td>
+      <td>
+        <%= currentElement.name %>
+      </td>
+      <td>
+        <%= currentElement.salary %>
+      </td>
+    </tr>
+    <% }) %>
+
+</table>
+<!-- Add a link to the home page -->
+<a href='/'>Home</a>
