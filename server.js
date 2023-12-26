@@ -54,7 +54,7 @@ app.get('/stores/edit/:sid', async (req, res) => {
     console.log('Retrieved Store:', store);
 
     // Render the 'edit' view, passing the retrieved store data
-    res.render('edit', { store: store });
+    res.render('edit', { store: store, errors: [] });
   } catch (error) {
     // Handle errors by logging and sending a 500 Internal Server Error response
     console.error(error);
@@ -64,21 +64,42 @@ app.get('/stores/edit/:sid', async (req, res) => {
 
 // Update Store - Handle form submission for updating a specific store
 app.post('/stores/edit/:sid', async (req, res) => {
-  try {
-    // Extract store ID from the request parameters
-    const storeId = req.params.sid;
-    console.log('Updating Store ID:', storeId);
-    // Extract updated store data from the request body
+  const storeId = req.params.sid;
+  const mgrID = req.body.mgrid;
+  const location = req.body.location;
+  // Initialize array of errors
+  let errorMessages = [];
+
+  // Check if Location is at least 1 character long
+  if (location.length < 1) {
+    errorMessages.push("Location must be at least 1 character long.");
+  }
+  // Check if Manager ID is four characters long
+  if (mgrID.length !== 4) {
+    errorMessages.push("Manager ID must be 4 characters long.");
+  }
+
+  /*   // Check if Manager ID exists in MongoDB
+    const managerExists = await coll.findOne({ mgrid: mgrID });
+    if (!managerExists) {
+      errorMessages.push("Manager ID does not exist.");
+    } */
+
+  // Check if Manager ID is not assigned to another Store in MySQL
+  const isAssigned = await mySQLDAO.isManagerAssignedToStore(mgrID, storeId);
+  if (isAssigned) {
+    errorMessages.push("Manager ID is already assigned to another store.");
+  }
+
+  // If there are no errors, update the store
+  if (errorMessages.length === 0) {
     const updatedStoreData = req.body;
-    console.log('Updated Store Data:', updatedStoreData);
-    // Update the store in the database with the new data
     await mySQLDAO.updateStore(storeId, updatedStoreData);
-    // Redirect the user back to the 'stores' page after successful update
     res.redirect('/stores');
-  } catch (error) {
-    console.error(error);
-    // Handle errors by logging and sending a 500 Internal Server Error response
-    res.status(500).send('Internal Server Error');
+  }
+  else {
+    // Render the 'edit' view with error messages
+    res.render('edit', { store: await mySQLDAO.getStoreById(storeId), errors: errorMessages });
   }
 });
 
@@ -108,26 +129,75 @@ app.get('/managers', async (req, res) => {
   }
 });
 app.get('/managers/add', async (req, res) => {
-  try {
-    // Render the 'edit' view, passing the retrieved store data
-    res.render('managers', { managers: managers });
-  } catch (error) {
-    // Handle errors by logging and sending a 500 Internal Server Error response
-    console.error(error);
-    res.status(500).send('Internal Server Error');
-  }
+
+  // Render the 'edit' view, passing the retrieved store data
+  res.render('addManager', { errors: [] });
 });
 
 app.post('/managers/add', async (req, res) => {
   try {
-    
-    // Update the store in the database with the new data
-    await mySQLDAO.addManager();
-    // Redirect the user back to the 'stores' page after successful update
+    const managerData = req.body; // This contains { managerID, name, salary }
+    let errorMessages = [];
+
+    // Validate Manager ID length
+    if (managerData._id && managerData._id.length !== 4) {
+      errorMessages.push("Manager ID must be 4 characters long.");
+    }
+
+    // Check for Manager ID uniqueness
+    const existingManager = await coll.findOne({ _id: managerData._id });
+    if (existingManager) {
+      errorMessages.push("Manager ID must be unique.");
+    }
+
+    // Validate Name length
+    if (managerData.name && managerData.name.length <= 5) {
+      errorMessages.push("Name must be more than 5 characters.");
+    }
+
+    // Validate Salary range
+    const salary = parseInt(managerData.salary, 10); // Convert to integer
+    if (isNaN(salary) || salary < 30000 || salary > 70000) {
+      errorMessages.push("Salary must be between 30,000 and 70,000.");
+    }
+
+    if (errorMessages.length === 0) {
+      const newManagerData = {
+        _id: managerData._id, 
+        name: managerData.name,
+        salary: salary
+      };
+
+      await coll.insertOne(newManagerData); // Insert into MongoDB with custom managerID field
+      // Redirect to '/managers' when there are no errors
+      res.redirect('/managers');
+    } else {
+      // Render the 'addManager' view with error messages
+      res.render('addManager', { errors: errorMessages });
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Delete Manager
+app.get('/managers/delete/:_id', async (req, res) => {
+  try {
+    // Extract the manager ID from the URL parameter
+    const managerId = req.params.managerId;
+
+    // Delete the manager from the MongoDB collection
+    const result = await coll.deleteOne({ _id: managerId });
+
+    if (result.deletedCount === 0) {
+      throw new Error("No manager found with the given ID.");
+    }
+
+    // Redirect back to the managers page
     res.redirect('/managers');
   } catch (error) {
     console.error(error);
-    // Handle errors by logging and sending a 500 Internal Server Error response
     res.status(500).send('Internal Server Error');
   }
 });

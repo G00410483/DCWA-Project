@@ -78,7 +78,7 @@ function updateStore(storeId, updatedStoreData) {
         pool.query('UPDATE store SET location = ?, mgrid = ? WHERE sid = ?',
             [updatedStoreData.location, updatedStoreData.mgrid, storeId])
             .then(() => {
-                resolve(); // Resolve without sending any specific data
+                resolve();
             })
             .catch(error => {
                 reject(error);
@@ -126,11 +126,11 @@ function getManagerDetails() {
     });
 }
 
-function addManager() {
+function addManager(managerData) {
     return new Promise((resolve, reject) => {
-        var manager = coll.insertOne()
-            .then((manager) => {
-                resolve(manager); // Resolve without sending any specific data
+        coll.insertOne(managerData) // Insert the manager data
+            .then((result) => {
+                resolve(result); // Resolve with the inserted document
             })
             .catch(error => {
                 reject(error);
@@ -138,6 +138,28 @@ function addManager() {
     });
 }
 
+// Define a function 'isManagerAssignedToStore' to check if a manager is assigned to another store
+function isManagerAssignedToStore(managerId, storeId) {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM store WHERE mgrid = ? AND sid != ?', [managerId, storeId])
+            .then((data) => {
+                if (data.length > 0) {
+                    // If the manager is found in another store, resolve with 'true'
+                    resolve(true);
+                } else {
+                    // If the manager is not found in any other store, resolve with 'false'
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                // Reject with the encountered error
+                reject(error);
+            });
+    });
+}
+
+
+
 // Export the defined functions so they can be used in other modules
-module.exports = { getStores, getStoreById, updateStore, getProducts, getManagerDetails, addManager };
+module.exports = { getStores, getStoreById, updateStore, getProducts, addManager, getManagerDetails, isManagerAssignedToStore };
 

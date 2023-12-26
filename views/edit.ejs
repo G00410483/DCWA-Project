@@ -25,6 +25,14 @@
     margin-top: 10px; /* Optional: Add some top margin for spacing */
   }
 </style>
+
+<% if (errors && errors.length > 0) { %>
+  <div>
+    <% errors.forEach(function(error) { %>
+      <p><%= error %></p>
+    <% }); %>
+  </div>
+<% } %>
 <h1>Edit Store</h1>
 <!-- Form to update the store -->
 <form action="/stores/edit/<%= store ? store.sid : '' %>" method="POST">
@@ -32,12 +40,15 @@
     <tr>
       <td>
         <label for="sid">SID:</label>
+        <!-- Value checks if store exists, if exists sets the value to the value of 
+          store.sid otherwise sets the value attribute to an empty string -->
         <input type="text" id="sid" name="sid" value="<%= store ? store.sid : '' %>" readonly required>
       </td>
     </tr>
     <tr>
       <td>
         <label for="location">Location:</label>
+       <!--  It checks if a variable "store" exists and if "store.location" is not null. -->
         <input type="text" id="location" name="location" value="<%= store && store.location !== null ? store.location : '' %>" pattern=".{1,}" title="Minimum 1 character required" required>
       </td>
     </tr>

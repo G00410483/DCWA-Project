@@ -22,17 +22,25 @@
     button {
       display: block;
       margin: auto;
-      margin-top: 10px; /* Optional: Add some top margin for spacing */
+      margin-top: 10px;
     }
   </style>
+
+<% if (errors && errors.length > 0) { %>
+  <div>
+    <% errors.forEach(function(error) { %>
+      <p><%= error %></p>
+    <% }); %>
+  </div>
+<% } %>
   <h1>Add Manager</h1>
   <!-- Form to add a manager -->
-<form action="/managers/add" method="POST"> <!-- Corrected form action -->
+<form action="/managers/add" method="POST"> 
     <table>
       <tr>
         <td>
-          <label for="managerID">MANAGER ID:</label> <!-- Corrected field name -->
-          <input type="text" id="managerID" name="managerID" required>
+          <label for="managerID">Manager ID:</label>
+          <input type="text" id="managerID" name="managerID" pattern=".{4}" title="Exactly 4 characters required" required>
         </td>
       </tr>
       <tr>
@@ -44,7 +52,7 @@
       <tr>
         <td>
           <label for="salary">Salary:</label>
-          <input type="text" id="salary" name="salary" pattern=".{4,}" title="Minimum 4 characters required" required>
+          <input type="text" id="salary" name="salary" required>
         </td>
       </tr>
     </table>
