@@ -79,11 +79,11 @@ app.post('/stores/edit/:sid', async (req, res) => {
     errorMessages.push("Manager ID must be 4 characters long.");
   }
 
-  /*   // Check if Manager ID exists in MongoDB
-    const managerExists = await coll.findOne({ mgrid: mgrID });
+    // Check if Manager ID exists in MongoDB
+    const managerExists = await coll.findOne({ _id: mgrID });
     if (!managerExists) {
       errorMessages.push("Manager ID does not exist.");
-    } */
+    }
 
   // Check if Manager ID is not assigned to another Store in MySQL
   const isAssigned = await mySQLDAO.isManagerAssignedToStore(mgrID, storeId);
@@ -137,6 +137,7 @@ app.get('/managers/add', async (req, res) => {
 app.post('/managers/add', async (req, res) => {
   try {
     const managerData = req.body; // This contains { managerID, name, salary }
+    // Initializing array of errors
     let errorMessages = [];
 
     // Validate Manager ID length
@@ -161,13 +162,13 @@ app.post('/managers/add', async (req, res) => {
       errorMessages.push("Salary must be between 30,000 and 70,000.");
     }
 
+    // If no errors create a new manager and navigate back to managers page
     if (errorMessages.length === 0) {
       const newManagerData = {
         _id: managerData._id, 
         name: managerData.name,
         salary: salary
       };
-
       await coll.insertOne(newManagerData); // Insert into MongoDB with custom managerID field
       // Redirect to '/managers' when there are no errors
       res.redirect('/managers');
@@ -178,27 +179,6 @@ app.post('/managers/add', async (req, res) => {
 
   } catch (error) {
     console.error(error);
-  }
-});
-
-// Delete Manager
-app.get('/managers/delete/:_id', async (req, res) => {
-  try {
-    // Extract the manager ID from the URL parameter
-    const managerId = req.params.managerId;
-
-    // Delete the manager from the MongoDB collection
-    const result = await coll.deleteOne({ _id: managerId });
-
-    if (result.deletedCount === 0) {
-      throw new Error("No manager found with the given ID.");
-    }
-
-    // Redirect back to the managers page
-    res.redirect('/managers');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
   }
 });
 
