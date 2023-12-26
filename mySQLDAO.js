@@ -89,18 +89,20 @@ function updateStore(storeId, updatedStoreData) {
 function getProducts() {
     const query = `
     SELECT 
-        ps.pid AS 'Product ID',
+        p.pid AS 'Product ID',
         p.productdesc AS 'Description',
-        ps.sid AS 'Store ID',
+        s.sid AS 'Store ID',
         s.location AS 'Location',
-        ps.Price AS 'Price'
+        ps.price AS 'Price'
     FROM 
-        product_store ps
-    JOIN 
-        product p ON ps.pid = p.pid
+        product p
     LEFT JOIN 
-        store s ON ps.sid = s.sid;
-        `;
+        product_store ps ON p.pid = ps.pid
+    LEFT JOIN 
+        store s ON ps.sid = s.sid
+    ORDER BY 
+        p.pid, s.location;
+    `;
     return new Promise((resolve, reject) => {
         pool.query(query, (error, results) => {
             if (error) {
@@ -111,6 +113,8 @@ function getProducts() {
         });
     });
 }
+
+
 
 // Define a function to get manager details (both MySQL and MongoDB)
 function getManagerDetails() {

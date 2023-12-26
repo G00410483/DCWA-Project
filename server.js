@@ -64,6 +64,7 @@ app.get('/stores/edit/:sid', async (req, res) => {
 
 // Update Store - Handle form submission for updating a specific store
 app.post('/stores/edit/:sid', async (req, res) => {
+  // Extract data from the request parameters
   const storeId = req.params.sid;
   const mgrID = req.body.mgrid;
   const location = req.body.location;
@@ -107,7 +108,8 @@ app.post('/stores/edit/:sid', async (req, res) => {
 app.get('/products', async (req, res) => {
   try {
     // Retrieve the list of products from MongoDB
-    const products = await mySQLDAO.getProducts(); // Use getProducts, not getMongoProducts
+    const products = await mySQLDAO.getProducts(); // Use MongoDB function
+    // Render the 'products' view, passing the retrieved products data
     res.render('products', { products: products });
   } catch (error) {
     console.error(error);
@@ -120,6 +122,7 @@ app.get('/managers', async (req, res) => {
   try {
     // Retrieve the list of managers from MongoDB
     const managers = await mySQLDAO.getManagerDetails(); // Use MongoDB function
+    // Display managers in console
     console.log(managers)
     // Render the 'managers' view, passing the retrieved managers data
     res.render('managers', { managers: managers });
@@ -130,7 +133,7 @@ app.get('/managers', async (req, res) => {
 });
 app.get('/managers/add', async (req, res) => {
 
-  // Render the 'edit' view, passing the retrieved store data
+  // Render the 'edit' view, passing the retrieved store data and errors to display
   res.render('addManager', { errors: [] });
 });
 
@@ -158,18 +161,20 @@ app.post('/managers/add', async (req, res) => {
 
     // Validate Salary range
     const salary = parseInt(managerData.salary, 10); // Convert to integer
+    // If salary is 0, less than 30000 or more than 70000
     if (isNaN(salary) || salary < 30000 || salary > 70000) {
       errorMessages.push("Salary must be between 30,000 and 70,000.");
     }
 
     // If no errors create a new manager and navigate back to managers page
     if (errorMessages.length === 0) {
+      // Create a new manager
       const newManagerData = {
         _id: managerData._id, 
         name: managerData.name,
         salary: salary
       };
-      await coll.insertOne(newManagerData); // Insert into MongoDB with custom managerID field
+      await coll.insertOne(newManagerData); // Insert into MongoDB with custom manager fields
       // Redirect to '/managers' when there are no errors
       res.redirect('/managers');
     } else {
