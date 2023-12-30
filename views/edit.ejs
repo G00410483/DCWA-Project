@@ -4,31 +4,29 @@
 <style>
   table {
     width: 80%;
-    /* Adjust the width as needed */
     margin: auto;
-    /* Center-align the table */
     border-collapse: collapse;
   }
 
   th,
   td {
     padding: 10px;
-    /* Add padding to create a gap between columns */
     text-align: center;
-    /* Center-align content within cells */
     border: 1px solid #ddd;
-    /* Add border for better visibility */
   }
   button {
     display: block;
     margin: auto;
-    margin-top: 10px; /* Optional: Add some top margin for spacing */
+    margin-top: 10px; 
   }
 </style>
 
+<!-- Check if there are any errors to display -->
 <% if (errors && errors.length > 0) { %>
   <div>
+    <!-- Loop through each error in the 'errors' array -->
     <% errors.forEach(function(error) { %>
+      <!-- Display the error message inside a paragraph element -->
       <p><%= error %></p>
     <% }); %>
   </div>

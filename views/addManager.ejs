@@ -4,20 +4,15 @@
 <style>
     table {
       width: 80%;
-      /* Adjust the width as needed */
       margin: auto;
-      /* Center-align the table */
       border-collapse: collapse;
     }
   
     th,
     td {
       padding: 10px;
-      /* Add padding to create a gap between columns */
       text-align: center;
-      /* Center-align content within cells */
       border: 1px solid #ddd;
-      /* Add border for better visibility */
     }
     button {
       display: block;
@@ -26,9 +21,12 @@
     }
   </style>
 
+<!-- Check if there are any errors to display -->
 <% if (errors && errors.length > 0) { %>
   <div>
+    <!-- Loop through each error in the 'errors' array -->
     <% errors.forEach(function(error) { %>
+       <!-- Display the error message inside a paragraph element -->
       <p><%= error %></p>
     <% }); %>
   </div>
@@ -39,19 +37,25 @@
     <table>
       <tr>
         <td>
+          <!-- Label for Manager ID input field -->
           <label for="_id">Manager ID:</label>
+          <!-- Input field for Manager ID with pattern and title attributes -->
           <input type="text" id="_id" name="_id" pattern=".{4}" title="Exactly 4 characters required" required>
         </td>
       </tr>
       <tr>
         <td>
+          <!-- Label for Name input field -->
           <label for="name">Name:</label>
+          <!-- Input field for Name with pattern and title attributes -->
           <input type="text" id="name" name="name" pattern=".{5,}" title="Minimum 5 characters required" required>
         </td>
       </tr>
       <tr>
         <td>
+          <!-- Label for Salary input field -->
           <label for="salary">Salary:</label>
+          <!-- Input field for Salary with 'required' attribute -->
           <input type="text" id="salary" name="salary" required>
         </td>
       </tr>

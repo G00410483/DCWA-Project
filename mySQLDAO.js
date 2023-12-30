@@ -23,21 +23,28 @@ pmysql.createPool({
 
 // Define a function to retrieve all managers from MongoDB
 async function getManagersFromMongo() {
+    // MongoDB connection URL and database name
     const url = 'mongodb://localhost:27017';
     const dbName = 'proj2023MongoDB'; 
+    // Create a new MongoDB client with specific options
     const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
     try {
+        // Establish a connection to the MongoDB server
         await client.connect();
         const db = client.db(dbName);
+        // Access the 'managers' collection within the database
         const collection = db.collection('managers'); 
-
+        // Query all documents (manager records) in the 'managers' collection and convert the result to an array
         const managers = await collection.find({}).toArray();
+        // Return the array of manager documents
         return managers;
     } catch (err) {
+        // Handle any errors that occur during the database operation
         console.error('Error: ', err);
         throw err;
     } finally {
+        // Ensure that the MongoDB client connection is closed, whether the operation succeeds or fails
         await client.close();
     }
 }
@@ -76,16 +83,20 @@ function getStoreById(storeId) {
 function updateStore(storeId, updatedStoreData) {
     return new Promise((resolve, reject) => {
         pool.query('UPDATE store SET location = ?, mgrid = ? WHERE sid = ?',
+            // Substitute placeholders in the query with actual data
             [updatedStoreData.location, updatedStoreData.mgrid, storeId])
             .then(() => {
+                // If the query is successful, resolve the promise without any value
                 resolve();
             })
             .catch(error => {
+                // If there is an error in the query, reject the promise with the error
                 reject(error);
             });
     });
 }
-
+// This function represents SQL query that retrieves data from mutiple 
+// tables and returns set with specified column aliases
 function getProducts() {
     const query = `
     SELECT 
@@ -165,7 +176,7 @@ function getManagerDetails() {
             });
     });
 }
-
+// Adds new manager to db
 function addManager(managerData) {
     return new Promise((resolve, reject) => {
         coll.insertOne(managerData) // Insert the manager data

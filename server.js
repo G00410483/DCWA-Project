@@ -124,12 +124,15 @@ app.get('/products/delete/:pid', async (req, res) => {
     // Check if the product is sold in any store
     const isSold = await mySQLDAO.isProductSold(pid); // Implement this function
 
+    // Check if the 'isSold' array is not empty, indicating the product is still in stock
     if(isSold.length != 0) {
       console.log("This product is still in stock. It can't be deleted");
       // Pass the product ID to the EJS file as 'productName'
-    res.render('deleteError', { productName: pid });
+      // Pass the product ID to the EJS file as 'productName
+      res.render('deleteError', { pid: pid });
     }
     else {
+      // If the product is not sold in any store, delete it from the database
       await mySQLDAO.deleteProduct(pid);
       console.log("Product: " + pid + " deleted.");
       res.redirect('/products');
