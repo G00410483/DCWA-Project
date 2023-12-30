@@ -116,6 +116,31 @@ app.get('/products', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+// Delete Product Page
+app.get('/products/delete/:pid', async (req, res) => {
+  try {
+    console.log("Delete");
+    const pid = req.params.pid;
+    console.log(pid);
+    // Check if the product is sold in any store
+    const isSold = await checkIfProductIsSold(pid); // Implement this function
+    if (isSold) {
+      // Handle the case where the product is sold in a store
+      // Render a page or redirect with an error message
+      res.send('Product cannot be deleted as it is sold in a store.');
+    } 
+    else {
+      // If the product is not sold, delete it from the database
+      await deleteProduct(pid); // Implement this function
+      // Redirect back to the products page
+      res.redirect('/products');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 // Managers Page
 app.get('/managers', async (req, res) => {

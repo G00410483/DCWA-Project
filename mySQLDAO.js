@@ -113,8 +113,46 @@ function getProducts() {
         });
     });
 }
+// Define a function 'checkIfProductIsSold' to check if a product is sold in any store
+function checkIfProductIsSold(productId) {
+    return new Promise((resolve, reject) => {
+        // Query to check if the product is present in the 'product_store' table
+        const query = 'SELECT * FROM product_store WHERE pid = ?';
 
+        pool.query(query, [productId])
+            .then((data) => {
+                if (data.length > 0) {
+                    // If the product is found in the 'product_store' table, it means it's sold in a store
+                    resolve(true);
+                } else {
+                    // If the product is not found, it means it's not sold in any store
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                // Reject with the encountered error
+                reject(error);
+            });
+    });
+}
 
+// Define a function 'deleteProduct' to delete a product by its ID
+function deleteProduct(pid) {
+    return new Promise((resolve, reject) => {
+        // SQL query to delete the product from the 'product' table
+        const query = 'DELETE FROM product WHERE pid = ?';
+
+        pool.query(query, [pid])
+            .then((result) => {
+                // If the delete operation is successful, resolve the promise
+                resolve(result);
+            })
+            .catch(error => {
+                // If there is an error during the delete operation, reject the promise
+                reject(error);
+            });
+    });
+}
 
 // Define a function to get manager details (both MySQL and MongoDB)
 function getManagerDetails() {
@@ -162,8 +200,6 @@ function isManagerAssignedToStore(managerId, storeId) {
     });
 }
 
-
-
 // Export the defined functions so they can be used in other modules
-module.exports = { getStores, getStoreById, updateStore, getProducts, addManager, getManagerDetails, isManagerAssignedToStore };
+module.exports = { getStores, getStoreById, updateStore, getProducts, checkIfProductIsSold, deleteProduct, addManager, getManagerDetails, isManagerAssignedToStore };
 
