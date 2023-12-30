@@ -119,20 +119,19 @@ app.get('/products', async (req, res) => {
 // Delete Product Page
 app.get('/products/delete/:pid', async (req, res) => {
   try {
-    console.log("Delete");
     const pid = req.params.pid;
     console.log(pid);
     // Check if the product is sold in any store
-    const isSold = await checkIfProductIsSold(pid); // Implement this function
-    if (isSold) {
-      // Handle the case where the product is sold in a store
-      // Render a page or redirect with an error message
-      res.send('Product cannot be deleted as it is sold in a store.');
-    } 
+    const isSold = await mySQLDAO.isProductSold(pid); // Implement this function
+
+    if(isSold.length != 0) {
+      console.log("This product is still in stock. It can't be deleted");
+      // Pass the product ID to the EJS file as 'productName'
+    res.render('deleteError', { productName: pid });
+    }
     else {
-      // If the product is not sold, delete it from the database
-      await deleteProduct(pid); // Implement this function
-      // Redirect back to the products page
+      await mySQLDAO.deleteProduct(pid);
+      console.log("Product: " + pid + " deleted.");
       res.redirect('/products');
     }
   } catch (error) {

@@ -24,13 +24,13 @@ pmysql.createPool({
 // Define a function to retrieve all managers from MongoDB
 async function getManagersFromMongo() {
     const url = 'mongodb://localhost:27017';
-    const dbName = 'your_db_name'; // Replace with your MongoDB database name
+    const dbName = 'proj2023MongoDB'; 
     const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
     try {
         await client.connect();
         const db = client.db(dbName);
-        const collection = db.collection('managers'); // Replace 'managers' with your collection name
+        const collection = db.collection('managers'); 
 
         const managers = await collection.find({}).toArray();
         return managers;
@@ -105,29 +105,27 @@ function getProducts() {
     `;
     return new Promise((resolve, reject) => {
         pool.query(query, (error, results) => {
+            // If there's an error, reject the promise with the error
             if (error) {
                 reject(error);
-            } else {
+            }
+            // If successful, resolve the promise with the query results 
+            else {
                 resolve(results);
             }
         });
     });
 }
 // Define a function 'checkIfProductIsSold' to check if a product is sold in any store
-function checkIfProductIsSold(productId) {
+function isProductSold(pid) {
     return new Promise((resolve, reject) => {
         // Query to check if the product is present in the 'product_store' table
         const query = 'SELECT * FROM product_store WHERE pid = ?';
 
-        pool.query(query, [productId])
+        pool.query(query, pid)
             .then((data) => {
-                if (data.length > 0) {
-                    // If the product is found in the 'product_store' table, it means it's sold in a store
-                    resolve(true);
-                } else {
-                    // If the product is not found, it means it's not sold in any store
-                    resolve(false);
-                }
+                // If the product is found in the 'product_store' table, it means it's sold in a store
+                resolve(data);
             })
             .catch(error => {
                 // Reject with the encountered error
@@ -201,5 +199,5 @@ function isManagerAssignedToStore(managerId, storeId) {
 }
 
 // Export the defined functions so they can be used in other modules
-module.exports = { getStores, getStoreById, updateStore, getProducts, checkIfProductIsSold, deleteProduct, addManager, getManagerDetails, isManagerAssignedToStore };
+module.exports = { getStores, getStoreById, updateStore, getProducts, isProductSold, deleteProduct, addManager, getManagerDetails, isManagerAssignedToStore };
 

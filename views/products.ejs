@@ -29,13 +29,13 @@
     <% products.forEach((currentElement) => { %>
       <tr>
         <!-- Display product details in each row -->
-        <td id = "pid" name="pid"><%= currentElement['Product ID'] %></td>
+        <td><%= currentElement['Product ID'] %></td>
         <td><%= currentElement['Description'] %></td>
         <td><%= currentElement['Store ID'] %></td>
         <td><%= currentElement['Location'] %></td>
         <td><%= currentElement['Price'] %></td>
         <!-- Create a link to the 'Delete' each product -->
-        <td><a href='/products/delete/<%= currentElement.pid%>'>Delete <%= currentElement['Description'] %></a></td>
+        <td><a href="/products/delete/<%= currentElement['Product ID']%>">Delete <%= currentElement['Description'] %></a></td>
       </tr>
     <% }) %>
   </table>
